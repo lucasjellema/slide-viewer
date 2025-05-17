@@ -2,6 +2,8 @@
 
 A modern web application for viewing and annotating SVG slides with advanced features for presentation and collaboration.
 
+See demo at https://lucasjellema.github.io/slide-viewer/
+
 ## Features
 
 - Displays SVG slides in numerical order with responsive scaling
