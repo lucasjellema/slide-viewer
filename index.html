@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slide Viewer</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Slide Viewer</h1>
+            <div id="admin-controls" style="display: none;">
+                <button id="edit-btn" class="admin-btn">Edit Mode</button>
+                <button id="download-btn" class="admin-btn" style="display: none;">Download Annotations</button>
+            </div>
+        </div>
+        <div class="slide-container">
+            <div id="slide-display"></div>
+            <div class="controls">
+                <button id="prev-btn" class="nav-btn">Previous</button>
+                <span id="slide-counter">Slide 1 of 26</span>
+                <button id="next-btn" class="nav-btn">Next</button>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

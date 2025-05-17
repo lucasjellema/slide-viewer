@@ -1,0 +1,597 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#admin-controls {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.admin-btn {
+    background-color: #34a853;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.admin-btn:hover {
+    background-color: #2e8b57;
+}
+
+.admin-btn.active {
+    background-color: #ea4335;
+}
+
+.slide-container {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+#slide-display {
+    width: 100%;
+    height: 600px; /* Fixed height for consistent display */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    overflow: hidden; /* Changed from auto to hidden to prevent scrollbars */
+    position: relative;
+    border: 1px solid #e0e0e0; /* Light border to show container boundaries */
+}
+
+#slide-display svg {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Maintain aspect ratio while fitting in container */
+    max-width: 100%;
+    max-height: 100%;
+    display: block; /* Remove any extra space */
+}
+
+#slide-display.edit-mode {
+    border: 2px dashed #ea4335;
+}
+
+/* Annotation tools have been removed */
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.nav-btn {
+    background-color: #4285f4;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.nav-btn:hover {
+    background-color: #3367d6;
+}
+
+.nav-btn:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+#slide-counter {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.annotation {
+    position: absolute;
+    background-color: rgba(255, 255, 0, 0.3);
+    border: 2px solid #ffcc00;
+    padding: 5px;
+    border-radius: 3px;
+    pointer-events: all;
+    cursor: move;
+    z-index: 100;
+}
+
+.annotation-text {
+    background-color: white;
+    padding: 3px 6px;
+    border-radius: 2px;
+    font-size: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    pointer-events: none;
+}
+
+.annotation.selected {
+    border-color: #4285f4;
+    box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.5);
+}
+
+.removed {
+    display: none !important;
+}
+
+.elements-list {
+    position: fixed;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    max-height: 300px;
+    overflow-y: auto;
+    min-width: 200px;
+}
+
+.elements-list h3 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: #333;
+}
+
+.elements-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.elements-list li {
+    padding: 5px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+.elements-list li:last-child {
+    border-bottom: none;
+}
+
+.elements-list li:hover {
+    background-color: #f5f5f5;
+}
+
+.elements-list button {
+    background-color: #f1f3f4;
+    border: 1px solid #dadce0;
+    padding: 3px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-right: 5px;
+    margin-top: 5px;
+}
+
+.elements-list button:hover {
+    background-color: #e8eaed;
+}
+
+.elements-list .close-btn {
+    display: block;
+    margin: 10px auto 0;
+    padding: 5px 10px;
+    background-color: #4285f4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+}
+
+/* Element handles */
+.element-handle {
+    position: absolute;
+    pointer-events: none;
+    z-index: 50;
+}
+
+.element-handle-box {
+    stroke: #4285f4;
+    stroke-width: 2px;
+    fill: none;
+    stroke-dasharray: 4;
+    pointer-events: none;
+}
+
+.element-handle-label {
+    background-color: #4285f4;
+    color: white;
+    font-size: 10px;
+    padding: 2px 5px;
+    border-radius: 2px;
+    position: absolute;
+    top: -18px;
+    left: 0;
+    white-space: nowrap;
+    pointer-events: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.element-handle-group {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 100;
+}
+
+/* Modal styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal-container {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    width: 80%;
+    max-width: 600px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.modal-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+}
+
+.modal-close-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #666;
+}
+
+.modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    max-height: 60vh;
+}
+
+.modal-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.modal-btn {
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.modal-btn-primary {
+    background-color: #4285f4;
+    color: white;
+}
+
+.modal-btn-secondary {
+    background-color: #f1f3f4;
+    color: #333;
+    border: 1px solid #dadce0;
+}
+
+/* Rich text editor styles */
+.rich-text-editor {
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.editor-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dadce0;
+}
+
+.editor-btn {
+    background-color: transparent;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.editor-btn:hover {
+    background-color: #e8eaed;
+}
+
+.editor-btn.active {
+    background-color: #e8eaed;
+    border-color: #4285f4;
+}
+
+/* HTML toggle button styling */
+.editor-btn.html-toggle {
+    font-family: monospace;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.editor-btn.html-toggle.active {
+    background-color: #4285f4;
+    color: white;
+    border-color: #3367d6;
+}
+
+.editor-content {
+    padding: 15px;
+    min-height: 150px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.editor-content:focus {
+    outline: none;
+}
+
+/* Annotation styles with rich text support */
+.annotation-text {
+    background-color: white;
+    padding: 5px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    pointer-events: none;
+    max-width: 250px;
+    overflow: auto;
+    max-height: 150px;
+}
+
+.annotation-text p {
+    margin: 0 0 8px 0;
+}
+
+.annotation-text p:last-child {
+    margin-bottom: 0;
+}
+
+/* Tooltip styles */
+.annotation-tooltip {
+    position: absolute;
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    max-width: 300px;
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    overflow: auto;
+    max-height: 200px;
+}
+
+.annotation-tooltip.visible {
+    opacity: 1;
+}
+
+.annotation-tooltip-content {
+    font-size: 13px;
+    line-height: 1.4;
+    color: #333;
+}
+
+.annotation-tooltip-content p {
+    margin: 0 0 8px 0;
+}
+
+.annotation-tooltip-content p:last-child {
+    margin-bottom: 0;
+}
+
+.annotation-tooltip-arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 8px;
+    border-color: transparent;
+}
+
+.annotation-tooltip-arrow.top {
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-bottom-color: white;
+    border-top-width: 0;
+}
+
+.annotation-tooltip-arrow.bottom {
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-top-color: white;
+    border-bottom-width: 0;
+}
+
+.annotation-tooltip-arrow.left {
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    border-right-color: white;
+    border-left-width: 0;
+}
+
+.annotation-tooltip-arrow.right {
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    border-left-color: white;
+    border-right-width: 0;
+}
+
+/* Highlight for annotated elements */
+.annotated-element {
+    cursor: help !important;
+}
+
+.annotated-element:hover {
+    outline: 2px dashed #4285f4;
+    outline-offset: 2px;
+}
+
+/* Enhanced highlight when actively showing tooltip */
+.annotation-highlight {
+    outline: 3px solid #4285f4;
+    outline-offset: 2px;
+    filter: brightness(1.1);
+    transition: outline 0.2s ease, filter 0.2s ease;
+}
+
+/* Tooltip styles */
+.annotation-tooltip {
+    position: fixed;
+    z-index: 1000;
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    padding: 0;
+    max-width: 300px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0.2s;
+    pointer-events: auto; /* Enable pointer events so the tooltip can be interacted with */
+}
+
+.annotation-tooltip.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.annotation-tooltip-content {
+    padding: 10px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333;
+}
+
+/* Tooltip arrow styles */
+.annotation-tooltip-arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+}
+
+/* Arrow pointing up (tooltip below cursor) */
+.annotation-tooltip-arrow.top-left {
+    top: -8px;
+    left: 15px;
+    border-width: 0 8px 8px 8px;
+    border-color: transparent transparent white transparent;
+}
+
+/* Arrow pointing up (tooltip below cursor, but positioned left) */
+.annotation-tooltip-arrow.top-right {
+    top: -8px;
+    right: 15px;
+    border-width: 0 8px 8px 8px;
+    border-color: transparent transparent white transparent;
+}
+
+/* Arrow pointing down (tooltip above cursor) */
+.annotation-tooltip-arrow.bottom-left {
+    bottom: -8px;
+    left: 15px;
+    border-width: 8px 8px 0 8px;
+    border-color: white transparent transparent transparent;
+}
+
+/* Arrow pointing down (tooltip above cursor, but positioned left) */
+.annotation-tooltip-arrow.bottom-right {
+    bottom: -8px;
+    right: 15px;
+    border-width: 8px 8px 0 8px;
+    border-color: white transparent transparent transparent;
+}
+
+/* Annotation indicator styles */
+.annotation-indicator {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #ff0000;
+    border-radius: 50%;
+    left: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1000;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+}
+
+/* SVG annotation indicator */
+.annotation-indicator-svg {
+    fill: #ff0000;
+    stroke: #ffffff;
+    stroke-width: 1px;
+    pointer-events: none;
+}
+
+/* Fallback indicator for annotated elements */
+.has-annotation {
+    outline: 2px dashed #ff0000;
+    outline-offset: 2px;
+}
