@@ -2,7 +2,9 @@
 
 A modern web application for viewing and annotating SVG slides with advanced features for presentation and collaboration.
 
-See demo at https://lucasjellema.github.io/slide-viewer/
+See demo at https://lucasjellema.github.io/slide-viewer/ . Elements with a red circle have annotations; hover over them to see the tooltip. Some text elements also have an annotation but are not marked with a red circle.
+
+
 
 ## Features
 
