@@ -8,11 +8,13 @@ export class AnnotationManager {
     /**
      * Constructor for AnnotationManager
      * @param {Object} slideViewer - The SlideViewer instance
+     * @param {Object} zipLoader - Optional ZipLoader instance with annotations
      */
-    constructor(slideViewer) {
+    constructor(slideViewer, zipLoader = null) {
         this.slideViewer = slideViewer;
         this.annotations = {}; // Storage for annotations by slide
         this.selectedAnnotation = null;
+        this.zipLoader = zipLoader;
         
         // Create rich text editor
         this.richTextEditor = new RichTextEditor();
@@ -23,13 +25,19 @@ export class AnnotationManager {
         // Initialize annotations
         this.annotations = {};
         
-        // Try to load annotations from file first, then from localStorage as fallback
-        this.loadAnnotationsFromFile().then(loaded => {
-            if (!loaded) {
-                // If file loading failed, try localStorage
-                this.loadPersistedAnnotations();
-            }
-        });
+        // If we have a zip loader with annotations, use those
+        if (this.zipLoader && this.zipLoader.getAnnotations()) {
+            console.log('Loading annotations from zip file');
+            this.annotations = this.zipLoader.getAnnotations();
+        } else {
+            // Otherwise try to load from file first, then from localStorage as fallback
+            this.loadAnnotationsFromFile().then(loaded => {
+                if (!loaded) {
+                    // If file loading failed, try localStorage
+                    this.loadPersistedAnnotations();
+                }
+            });
+        }
         
         // Listen for slide changes
         this.setupEventListeners();

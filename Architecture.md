@@ -11,12 +11,15 @@ graph TD
     A[index.html] --> B[main.js]
     B --> C[SlideViewer.js]
     B --> D[AdminController.js]
+    B --> K[ZipLoader.js]
     D --> E[AnnotationManager.js]
     E --> F[RichTextEditor.js]
     E --> G[TooltipManager.js]
     C --> H[EventEmitter.js]
     D --> I[ElementDetector.js]
     D --> J[ElementHandleManager.js]
+    K -.-> C
+    K -.-> E
     
     style A fill:#f9f,stroke:#333,stroke-width:2px
     style B fill:#bbf,stroke:#333,stroke-width:2px
@@ -25,6 +28,7 @@ graph TD
     style E fill:#dfd,stroke:#333,stroke-width:2px
     style F fill:#dfd,stroke:#333,stroke-width:2px
     style G fill:#dfd,stroke:#333,stroke-width:2px
+    style K fill:#ffd,stroke:#333,stroke-width:2px
 ```
 
 ## Core Modules
@@ -32,10 +36,18 @@ graph TD
 ### SlideViewer
 - **Purpose**: Handles loading and navigating through SVG slides
 - **Key Responsibilities**:
-  - Loading SVG files from the slides directory
+  - Loading SVG files from the slides directory or zip content
   - Managing slide navigation (previous/next)
   - Handling keyboard navigation
   - Emitting events for slide changes
+
+### ZipLoader
+- **Purpose**: Handles downloading and extracting zip files containing slides and annotations
+- **Key Responsibilities**:
+  - Downloading zip files from remote URLs
+  - Extracting SVG slides and annotation data
+  - Providing slides to the SlideViewer
+  - Providing annotations to the AnnotationManager
 
 ### AdminController
 - **Purpose**: Manages admin mode functionality
@@ -71,6 +83,8 @@ graph TD
 
 ## Data Flow
 
+### Standard Flow
+
 ```mermaid
 sequenceDiagram
     participant User
@@ -98,6 +112,33 @@ sequenceDiagram
     AnnotationManager->>User: Download JSON File
 ```
 
+### Remote Slides Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Main
+    participant ZipLoader
+    participant SlideViewer
+    participant AnnotationManager
+    
+    User->>Main: Load with slidesZipUrl
+    Main->>ZipLoader: Download and Extract Zip
+    ZipLoader-->>Main: Extracted Content
+    Main->>SlideViewer: Initialize with Zip Content
+    Main->>AnnotationManager: Initialize with Zip Annotations
+    
+    User->>SlideViewer: Navigate Slides
+    SlideViewer->>ZipLoader: Get Slide Content
+    ZipLoader-->>SlideViewer: SVG Content
+    SlideViewer->>User: Display Slide
+    
+    SlideViewer->>AnnotationManager: Apply Annotations
+    AnnotationManager->>ZipLoader: Get Annotations
+    ZipLoader-->>AnnotationManager: Annotation Data
+    AnnotationManager->>User: Display Annotations
+```
+
 ## Annotation Data Structure
 
 Annotations are stored as JSON objects with the following structure:
@@ -123,12 +164,13 @@ Annotations are stored as JSON objects with the following structure:
 
 ## Storage Mechanisms
 
-The application uses two storage mechanisms for annotations:
+The application uses three storage mechanisms for content and annotations:
 
-1. **File-based Storage**: Annotations are saved as JSON files in the slides directory
-2. **localStorage**: Used as a fallback and for temporary storage between sessions
+1. **Remote Zip Files**: Slides and annotations can be loaded from remote zip files via URL parameter
+2. **File-based Storage**: Annotations are saved as JSON files in the slides directory
+3. **localStorage**: Used as a fallback and for temporary storage between sessions
 
-The application prioritizes loading from files over localStorage.
+The application prioritizes loading in this order: remote zip files > local files > localStorage.
 
 ## Event System
 
@@ -202,6 +244,14 @@ Update the `addAnnotationIndicator` method in TooltipManager:
 3. **Collaborative Editing**: Enable real-time collaboration on annotations
 4. **Mobile Optimization**: Enhance touch support for mobile devices
 5. **Accessibility Improvements**: Ensure ARIA compliance and keyboard navigation
+6. **Enhanced Remote Content**:
+   - Support for other archive formats (RAR, 7z)
+   - Streaming content loading for large presentations
+   - Incremental loading of slides for faster startup
+   - Caching of remote content for offline use
+7. **Content Management System Integration**:
+   - Integration with popular CMS platforms
+   - API for dynamic slide generation
 
 ## Technical Debt and Known Issues
 

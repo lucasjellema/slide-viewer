@@ -19,6 +19,7 @@ See demo at https://lucasjellema.github.io/slide-viewer/ . Elements with a red c
 - Ability to remove/hide objects from slides
 - Download annotations as JSON file
 - Persistent annotations via localStorage and file storage
+- Dynamic loading of slides and annotations from remote zip files
 
 ## Usage
 
@@ -30,11 +31,30 @@ See demo at https://lucasjellema.github.io/slide-viewer/ . Elements with a red c
 
 ### Admin Mode
 1. Add `?admin=yes` to the URL to access admin mode (e.g., `index.html?admin=yes`)
-2. Click the "Edit Mode" button to enter edit mode
+2. Click the "Edit Mode" button to enable editing
 3. Click on any SVG element to add an annotation
 4. Click and drag annotations to reposition them
 5. Click on annotations to edit their content
 6. Click the "Download Annotations" button to save all annotations as a JSON file
+
+### Remote Slides
+You can load slides and annotations from a remote zip file using the `slidesZipUrl` parameter:
+
+```
+index.html?slidesZipUrl=https://example.com/slides.zip
+```
+
+The zip file should contain:
+1. SVG files named `Slide1.SVG`, `Slide2.SVG`, etc.
+2. Optionally, an `annotations.json` file with annotation data
+
+This feature allows you to:
+- Host slide content on different servers
+- Distribute presentations as single zip files
+- Update content dynamically without changing the application
+- Share specific slide sets with custom annotations
+
+You can combine parameters (e.g., `index.html?slidesZipUrl=https://example.com/slides.zip&admin=yes`)
 
 ## Advanced Annotation Features
 

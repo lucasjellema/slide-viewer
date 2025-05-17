@@ -18,6 +18,9 @@ export class SlideViewer {
         this.currentSlideIndex = 1;
         this.totalSlides = config.totalSlides || 26;
         
+        // Zip content (if available)
+        this.zipLoader = config.zipLoader || null;
+        
         // Event listeners
         this.setupEventListeners();
     }
@@ -70,12 +73,29 @@ export class SlideViewer {
             // Trigger pre-load event for any listeners
             this.triggerEvent('beforeSlideLoad', { currentIndex: this.currentSlideIndex, newIndex: index });
             
-            const response = await fetch(`slides/Slide${index}.SVG`);
-            if (!response.ok) {
-                throw new Error(`Failed to load slide ${index}`);
+            let svgContent;
+            
+            // Check if we have a zip loader with slides
+            if (this.zipLoader && this.zipLoader.getSlide(index)) {
+                // Load from zip content
+                svgContent = this.zipLoader.getSlide(index);
+                console.log(`Loaded slide ${index} from zip content`);
+                
+                // Update total slides count if needed
+                if (this.totalSlides !== this.zipLoader.getTotalSlides()) {
+                    this.totalSlides = this.zipLoader.getTotalSlides();
+                    console.log(`Updated total slides to ${this.totalSlides} based on zip content`);
+                }
+            } else {
+                // Load from file system
+                const response = await fetch(`slides/Slide${index}.SVG`);
+                if (!response.ok) {
+                    throw new Error(`Failed to load slide ${index}`);
+                }
+                svgContent = await response.text();
             }
             
-            const svgContent = await response.text();
+            // Set the SVG content
             this.slideDisplay.innerHTML = svgContent;
             
             // Resize the SVG to fit the container

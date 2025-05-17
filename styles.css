@@ -500,6 +500,28 @@ body {
     transition: outline 0.2s ease, filter 0.2s ease;
 }
 
+/* Loading and error messages */
+.loading, .error {
+    padding: 20px;
+    text-align: center;
+    font-size: 18px;
+    margin: 40px auto;
+    max-width: 80%;
+    border-radius: 8px;
+}
+
+.loading {
+    background-color: #e8f0fe;
+    color: #1a73e8;
+    border: 1px solid #1a73e8;
+}
+
+.error {
+    background-color: #fce8e6;
+    color: #d93025;
+    border: 1px solid #d93025;
+}
+
 /* Tooltip styles */
 .annotation-tooltip {
     position: fixed;
