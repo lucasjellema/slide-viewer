@@ -4,7 +4,8 @@ A modern web application for viewing and annotating SVG slides with advanced fea
 
 See demo at https://lucasjellema.github.io/slide-viewer/ . Elements with a red circle have annotations; hover over them to see the tooltip. Some text elements also have an annotation but are not marked with a red circle.
 
-
+You can also load a zip file of slides and annotations from a remote URL:
+https://lucasjellema.github.io/slide-viewer/?slidesZipUrl=https://raw.githubusercontent.com/lucasjellema/slide-viewer/refs/heads/main/book-print-short-pres.zip
 
 ## Features
 
@@ -43,6 +44,8 @@ You can load slides and annotations from a remote zip file using the `slidesZipU
 ```
 index.html?slidesZipUrl=https://example.com/slides.zip
 ```
+
+https://raw.githubusercontent.com/lucasjellema/slide-viewer/refs/heads/main/book-print-short-pres.zip
 
 The zip file should contain:
 1. SVG files named `Slide1.SVG`, `Slide2.SVG`, etc.
