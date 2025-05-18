@@ -25,12 +25,19 @@ export class AnnotationManager {
         // Initialize annotations
         this.annotations = {};
         
-        // If we have a zip loader with annotations, use those
-        if (this.zipLoader && this.zipLoader.getAnnotations()) {
-            console.log('Loading annotations from zip file');
-            this.annotations = this.zipLoader.getAnnotations();
+        // If we have a zip loader, use its annotations (if any) and don't load local files
+        if (this.zipLoader) {
+            if (this.zipLoader.getAnnotations()) {
+                console.log('Loading annotations from zip file');
+                this.annotations = this.zipLoader.getAnnotations();
+            } else {
+                console.log('Zip file provided but no annotations found in it');
+                // Only use localStorage as fallback if no zip annotations
+                this.loadPersistedAnnotations();
+            }
         } else {
-            // Otherwise try to load from file first, then from localStorage as fallback
+            // No zip loader, try to load from local file first, then from localStorage as fallback
+            console.log('No zip file provided, trying to load local annotations');
             this.loadAnnotationsFromFile().then(loaded => {
                 if (!loaded) {
                     // If file loading failed, try localStorage
