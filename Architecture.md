@@ -46,8 +46,10 @@ graph TD
 - **Key Responsibilities**:
   - Downloading zip files from remote URLs
   - Extracting SVG slides and annotation data
+  - Supporting multiple annotation file names (`slide-annotations.json` or `annotations.json`)
   - Providing slides to the SlideViewer
   - Providing annotations to the AnnotationManager
+  - Dynamically loading the JSZip library when needed
 
 ### AdminController
 - **Purpose**: Manages admin mode functionality
@@ -121,6 +123,7 @@ sequenceDiagram
     participant ZipLoader
     participant SlideViewer
     participant AnnotationManager
+    participant LocalStorage
     
     User->>Main: Load with slidesZipUrl
     Main->>ZipLoader: Download and Extract Zip
@@ -134,8 +137,15 @@ sequenceDiagram
     SlideViewer->>User: Display Slide
     
     SlideViewer->>AnnotationManager: Apply Annotations
-    AnnotationManager->>ZipLoader: Get Annotations
-    ZipLoader-->>AnnotationManager: Annotation Data
+    
+    alt Annotations in Zip File
+        AnnotationManager->>ZipLoader: Get Annotations
+        ZipLoader-->>AnnotationManager: Annotation Data
+    else No Annotations in Zip File
+        AnnotationManager->>LocalStorage: Get Persisted Annotations
+        LocalStorage-->>AnnotationManager: Stored Annotations (if any)
+    end
+    
     AnnotationManager->>User: Display Annotations
 ```
 
@@ -170,7 +180,20 @@ The application uses three storage mechanisms for content and annotations:
 2. **File-based Storage**: Annotations are saved as JSON files in the slides directory
 3. **localStorage**: Used as a fallback and for temporary storage between sessions
 
-The application prioritizes loading in this order: remote zip files > local files > localStorage.
+### Loading Priority
+
+The application prioritizes loading in this order:
+
+1. If a remote zip file is specified (`slidesZipUrl` parameter):
+   - Load slides from the zip file
+   - Load annotations only from the zip file if present
+   - Fall back to localStorage for annotations if not in zip file
+   - Never load local annotation files when using remote zip
+
+2. If no remote zip file is specified:
+   - Load slides from the local slides directory
+   - Try to load annotations from local `slide-annotations.json` file
+   - Fall back to localStorage if local annotation file is not found
 
 ## Event System
 

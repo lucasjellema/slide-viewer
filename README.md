@@ -45,11 +45,16 @@ You can load slides and annotations from a remote zip file using the `slidesZipU
 index.html?slidesZipUrl=https://example.com/slides.zip
 ```
 
-https://raw.githubusercontent.com/lucasjellema/slide-viewer/refs/heads/main/book-print-short-pres.zip
+Example with a sample presentation:
+```
+https://lucasjellema.github.io/slide-viewer/?slidesZipUrl=https://raw.githubusercontent.com/lucasjellema/slide-viewer/refs/heads/main/book-print-short-pres.zip
+```
 
 The zip file should contain:
 1. SVG files named `Slide1.SVG`, `Slide2.SVG`, etc.
-2. Optionally, an `annotations.json` file with annotation data
+2. Optionally, an annotation file named either `slide-annotations.json` or `annotations.json`
+
+**Note:** When using a remote zip file, local annotations will not be loaded. The application will only use annotations included in the zip file or those created during the current session.
 
 This feature allows you to:
 - Host slide content on different servers
@@ -84,3 +89,10 @@ You can combine parameters (e.g., `index.html?slidesZipUrl=https://example.com/s
 - `styles.css` - CSS styling
 - `script.js` - JavaScript for slide navigation, annotation, and admin functionality
 - `slides/` - Directory containing SVG slides
+
+## Future Features
+
+- Slideshow (automated navigation)
+- Support for click actions on elements: navigate to slide, open URL, show image in modal 
+- Add multi-user comment management
+- Support for simple animations: elements appearing/disappearing, perhaps moving?
