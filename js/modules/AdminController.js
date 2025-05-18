@@ -384,12 +384,7 @@ export class AdminController {
             URL.revokeObjectURL(url);
         }, 0);
         
-        // Ask user if they want to save to slides folder
-        setTimeout(() => {
-            if (confirm('Do you want to save the annotations to the slides folder for automatic loading?')) {
-                this.saveAnnotationsToFile(annotationsJson);
-            }
-        }, 100);
+
         
         console.log(`Downloaded ${totalAnnotations} annotations`);
     }
@@ -408,8 +403,6 @@ export class AdminController {
             const blob = new Blob([annotationsJson], { type: 'application/json' });
             formData.append('file', blob, 'slide-annotations.json');
             
-            // Show a message to the user
-            alert('To save annotations to the slides folder, please download the file and manually place it in the slides folder.\n\nFilename: slide-annotations.json');
             
             console.log('Annotations prepared for saving to file');
             

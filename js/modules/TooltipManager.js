@@ -106,14 +106,298 @@ export class TooltipManager {
     }
     
     /**
-     * Add a simple visual indicator to an annotated element (fallback method)
+     * Add a visual indicator (red circle) to an annotated element using HTML instead of SVG
      * @param {Element} element - The element to add the indicator to
      */
     addVisualIndicator(element) {
         if (!element) return;
         
-        // Just add a class that will be styled via CSS
-        element.classList.add('has-annotation');
+        console.log('Adding HTML indicator for element:', element.id || element.tagName);
+        
+        try {
+            // Get the SVG element's container
+            const slideDisplay = document.getElementById('slide-display');
+            if (!slideDisplay) {
+                console.warn('Could not find slide display');
+                return;
+            }
+            
+            // Get element position within the SVG
+            const svgElement = element.closest('svg');
+            if (!svgElement) {
+                console.warn('Could not find parent SVG element');
+                return;
+            }
+            
+            // Create an HTML indicator element
+            const indicator = document.createElement('div');
+            indicator.className = 'html-annotation-indicator';
+            indicator.setAttribute('data-target-id', element.id);
+            indicator.innerHTML = '<span class="tooltip-hint">Click for annotation</span>';
+            
+            // Add indicator to slide display
+            slideDisplay.appendChild(indicator);
+            
+            // Position the indicator over the SVG element
+            this.positionIndicator(indicator, element, svgElement);
+            
+            // Add event listener for clicks
+            indicator.addEventListener('click', (event) => {
+                // Prevent the event from bubbling
+                event.stopPropagation();
+                
+                console.log('HTML indicator clicked for:', element.id);
+                
+                // Display the annotation content
+                const content = this.annotationMap.get(element.id);
+                if (!content) {
+                    console.warn('No annotation content found for:', element.id);
+                    return;
+                }
+                
+                // Set tooltip content
+                this.tooltipContent.innerHTML = content;
+                
+                // Position tooltip next to the indicator
+                const rect = indicator.getBoundingClientRect();
+                const tooltipRect = this.tooltip.getBoundingClientRect();
+                
+                // Position above by default
+                let top = rect.top - tooltipRect.height - 10;
+                // If not enough space above, position below
+                if (top < 10) {
+                    top = rect.bottom + 10;
+                }
+                
+                // Center horizontally on the indicator
+                const left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+                
+                // Ensure the tooltip doesn't go off-screen
+                const rightEdge = left + tooltipRect.width;
+                const viewportWidth = window.innerWidth;
+                
+                if (left < 10) {
+                    this.tooltip.style.left = '10px';
+                } else if (rightEdge > viewportWidth - 10) {
+                    this.tooltip.style.left = (viewportWidth - tooltipRect.width - 10) + 'px';
+                } else {
+                    this.tooltip.style.left = left + 'px';
+                }
+                
+                this.tooltip.style.top = top + 'px';
+                
+                // Show the tooltip
+                this.tooltip.classList.add('visible');
+                
+                // Highlight the annotated element
+                element.classList.add('annotation-highlight');
+                
+                // Store reference to current element
+                this.currentElement = element;
+                
+                // Add a click listener to the document to dismiss the tooltip
+                setTimeout(() => {
+                    const dismissHandler = (e) => {
+                        // Only dismiss if clicked outside the tooltip
+                        if (!this.tooltip.contains(e.target) && e.target !== indicator) {
+                            this.tooltip.classList.remove('visible');
+                            element.classList.remove('annotation-highlight');
+                            this.currentElement = null;
+                            document.removeEventListener('click', dismissHandler);
+                        }
+                    };
+                    
+                    document.addEventListener('click', dismissHandler);
+                }, 100);
+            });
+        } catch (error) {
+            console.error('Error adding indicator:', error);
+        }
+    }
+    
+    /**
+     * Position an HTML indicator over an SVG element
+     * @param {HTMLElement} indicator - The indicator element
+     * @param {SVGElement} targetElement - The SVG element to position over
+     * @param {SVGElement} svgElement - The parent SVG element
+     */
+    positionIndicator(indicator, targetElement, svgElement) {
+        try {
+            // Get SVG position relative to the viewport
+            const svgRect = svgElement.getBoundingClientRect();
+            
+            // Get element position in SVG coordinate space
+            let bbox;
+            try {
+                bbox = targetElement.getBBox();
+            } catch (e) {
+                console.warn('Could not get element bounding box:', e);
+                // Fallback to fixed position
+                indicator.style.left = svgRect.left + 10 + 'px';
+                indicator.style.top = svgRect.top + 10 + 'px';
+                return;
+            }
+            
+            // Convert SVG coordinates to screen coordinates
+            let point = svgElement.createSVGPoint();
+            point.x = bbox.x;
+            point.y = bbox.y;
+            
+            // Transform point to screen coordinates
+            let ctm = svgElement.getScreenCTM();
+            if (!ctm) {
+                console.warn('Could not get screen CTM');
+                return;
+            }
+            
+            let screenPoint = point.matrixTransform(ctm);
+            
+            // Position the indicator
+            indicator.style.left = screenPoint.x + 'px';
+            indicator.style.top = screenPoint.y + 'px';
+            
+            // Setup resize handler to reposition when window size changes
+            const resizeHandler = () => {
+                // Recalculate positions
+                const updatedSvgRect = svgElement.getBoundingClientRect();
+                const updatedCtm = svgElement.getScreenCTM();
+                if (!updatedCtm) return;
+                
+                const updatedPoint = point.matrixTransform(updatedCtm);
+                indicator.style.left = updatedPoint.x + 'px';
+                indicator.style.top = updatedPoint.y + 'px';
+            };
+            
+            // Add resize handler
+            window.addEventListener('resize', resizeHandler);
+            
+            // Also reposition when slides change
+            document.addEventListener('afterSlideLoad', resizeHandler);
+        } catch (error) {
+            console.error('Error positioning indicator:', error);
+        }
+    }
+    
+    /**
+     * Add event listeners to an indicator
+     * @param {SVGElement} indicator - The indicator element
+     * @param {string} targetId - The ID of the target element
+     */
+    addIndicatorEventListeners(indicator, targetId) {
+        if (!indicator || !targetId) return;
+        
+        console.log('Adding event listeners to indicator for element:', targetId);
+        
+        // Use click event for more reliable interaction on SVG elements
+        indicator.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent click from propagating
+            
+            // Check if we're in edit mode - don't show tooltips in edit mode
+            if (document.querySelector('#slide-display.edit-mode')) {
+                return;
+            }
+            
+            console.log('Indicator clicked for element:', targetId);
+            
+            // Get the target element
+            const targetElement = document.getElementById(targetId);
+            if (!targetElement) {
+                console.warn('Target element not found:', targetId);
+                return;
+            }
+            
+            if (!this.annotationMap.has(targetId)) {
+                console.warn('No annotation found for target:', targetId);
+                return;
+            }
+            
+            // Set current element
+            this.currentElement = targetElement;
+            
+            // Set tooltip content
+            this.tooltipContent.innerHTML = this.annotationMap.get(targetId);
+            
+            // Position tooltip relative to the indicator
+            this.positionTooltipForIndicator(event, indicator);
+            
+            // Show tooltip
+            this.tooltip.classList.add('visible');
+            
+            // Add highlight to the target element
+            targetElement.classList.add('annotation-highlight');
+        });
+        
+        // Also add mouseenter event as backup
+        indicator.addEventListener('mouseenter', (event) => {
+            // Only show tooltip preview on hover - full content on click
+            if (document.querySelector('#slide-display.edit-mode')) return;
+            
+            const targetElement = document.getElementById(targetId);
+            if (!targetElement || !this.annotationMap.has(targetId)) return;
+
+            // Show a brief "Click to view annotation" message
+            indicator.classList.add('hovered');
+        });
+        
+        // Handle mouse leave
+        indicator.addEventListener('mouseleave', () => {
+            indicator.classList.remove('hovered');
+        });
+    }
+    
+    /**
+     * Position the tooltip specifically for indicator elements
+     * @param {MouseEvent} event - The mouse event
+     * @param {SVGElement} indicator - The indicator element
+     */
+    positionTooltipForIndicator(event, indicator) {
+        if (!this.tooltip) return;
+        
+        // Get the size of the tooltip
+        const tooltipRect = this.tooltip.getBoundingClientRect();
+        
+        // Get the position of the indicator in the viewport
+        const svgElement = indicator.closest('svg');
+        if (!svgElement) return this.positionTooltip(event); // Fallback
+        
+        // Get SVG position and scaling
+        const svgRect = svgElement.getBoundingClientRect();
+        
+        // Get indicator position in SVG coordinate space
+        let cx = parseInt(indicator.getAttribute('cx')) || 0;
+        let cy = parseInt(indicator.getAttribute('cy')) || 0;
+        
+        // Convert to viewport coordinates
+        const svgPoint = svgElement.createSVGPoint();
+        svgPoint.x = cx;
+        svgPoint.y = cy;
+        
+        // Get the transformation matrix
+        const ctm = svgElement.getScreenCTM();
+        if (!ctm) return this.positionTooltip(event); // Fallback
+        
+        // Transform point to screen coordinates
+        const screenPoint = svgPoint.matrixTransform(ctm);
+        
+        // Calculate tooltip position
+        // Position tooltip above the indicator
+        let left = screenPoint.x - (tooltipRect.width / 2);
+        let top = screenPoint.y - tooltipRect.height - 15; // 15px above the indicator
+        
+        // Adjust if it would go off-screen
+        if (left < 10) left = 10;
+        if (left + tooltipRect.width > window.innerWidth - 10) {
+            left = window.innerWidth - tooltipRect.width - 10;
+        }
+        
+        if (top < 10) {
+            // If there's not enough space above, position below
+            top = screenPoint.y + 15; // 15px below the indicator
+        }
+        
+        // Set the tooltip position
+        this.tooltip.style.left = `${left}px`;
+        this.tooltip.style.top = `${top}px`;
     }
     
     /**

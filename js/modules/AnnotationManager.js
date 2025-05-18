@@ -538,6 +538,9 @@ export class AnnotationManager {
         // Clear existing visual annotations
         this.clearAnnotationsFromDisplay();
         
+        // Clear any existing HTML indicators
+        this.clearExistingIndicators();
+        
         // Clear any existing tooltips
         this.tooltipManager.clearAnnotatedElements();
         
@@ -628,6 +631,18 @@ export class AnnotationManager {
         const annotationElements = document.querySelectorAll('.annotation');
         annotationElements.forEach(el => el.remove());
         this.selectedAnnotation = null;
+    }
+    
+    /**
+     * Clear existing HTML annotation indicators
+     */
+    clearExistingIndicators() {
+        // Remove all existing HTML indicators
+        const indicators = document.querySelectorAll('.html-annotation-indicator');
+        indicators.forEach(indicator => {
+            indicator.remove();
+        });
+        console.log(`Cleared ${indicators.length} existing HTML indicators`);
     }
     
     /**
