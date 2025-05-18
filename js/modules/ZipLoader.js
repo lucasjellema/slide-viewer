@@ -98,7 +98,7 @@ export class ZipLoader {
                 }
             }
             // Check if this is an annotations file
-            else if (fileName === 'annotations.json') {
+            else if (fileName === 'slide-annotations.json' || fileName === 'annotations.json') {
                 filePromises.push(
                     zipEntry.async('text').then(content => {
                         try {
