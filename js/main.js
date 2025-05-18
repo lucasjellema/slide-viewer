@@ -5,6 +5,7 @@ import { SlideViewer } from './modules/SlideViewer.js';
 import { AdminController } from './modules/AdminController.js';
 import { ZipLoader } from './modules/ZipLoader.js';
 import { AnnotationManager } from './modules/AnnotationManager.js';
+import { SlideNavigator } from './modules/SlideNavigator.js';
 
 /**
  * Get a URL parameter by name
@@ -41,6 +42,16 @@ function initializeApp(zipLoader = null) {
     
     // Set up the annotation manager with the zip loader if available
     adminController.annotationManager = new AnnotationManager(slideViewer, zipLoader);
+    
+    // Initialize the slide navigator
+    const slideNavigator = new SlideNavigator({
+        slideViewer: slideViewer
+    });
+    
+    // Update the slide navigator if the total slides count changes
+    if (zipLoader) {
+        slideNavigator.updateTotalSlides(zipLoader.getTotalSlides());
+    }
     
     // Check for admin mode in URL
     adminController.checkAdminMode();

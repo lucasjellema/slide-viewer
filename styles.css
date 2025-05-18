@@ -522,6 +522,119 @@ body {
     border: 1px solid #d93025;
 }
 
+/* Collapsible panel styles */
+.collapsible-panel {
+    margin-top: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: white;
+}
+
+.panel-header {
+    padding: 12px 15px;
+    background-color: #f5f5f5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    border-bottom: 1px solid #ddd;
+}
+
+.panel-header h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.toggle-btn {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    color: #666;
+    transition: transform 0.3s;
+}
+
+.toggle-btn.collapsed {
+    transform: rotate(-90deg);
+}
+
+.panel-content {
+    max-height: 300px;
+    overflow-y: auto;
+    transition: max-height 0.3s ease-out;
+    padding: 15px;
+}
+
+.panel-content.collapsed {
+    max-height: 0;
+    padding: 0 15px;
+    overflow: hidden;
+}
+
+#slide-navigator {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.slide-thumbnail {
+    width: 120px;
+    height: 90px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    background-color: #f9f9f9;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.slide-thumbnail:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.slide-thumbnail.active {
+    border: 2px solid #4285f4;
+    box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.3);
+}
+
+.thumbnail-preview {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.slide-thumbnail svg {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    display: block !important;
+}
+
+.slide-number {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    font-size: 12px;
+    padding: 2px 0;
+    text-align: center;
+}
+
 /* Tooltip styles */
 .annotation-tooltip {
     position: fixed;
@@ -535,6 +648,45 @@ body {
     visibility: hidden;
     transition: opacity 0.2s, visibility 0.2s;
     pointer-events: auto; /* Enable pointer events so the tooltip can be interacted with */
+}
+
+/* Slide preview tooltip */
+.slide-preview-tooltip {
+    position: fixed;
+    z-index: 1500;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0.2s;
+    pointer-events: none; /* Don't interfere with mouse events */
+    border: 1px solid #ddd;
+}
+
+.slide-preview-tooltip.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.slide-preview-content {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.slide-preview-tooltip .preview-title {
+    position: absolute;
+    bottom: -30px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 14px;
+    color: #333;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 5px;
+    border-radius: 0 0 8px 8px;
 }
 
 .annotation-tooltip.visible {

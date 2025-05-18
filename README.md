@@ -14,6 +14,7 @@ https://lucasjellema.github.io/slide-viewer/?slidesZipUrl=https://raw.githubuser
 - Keyboard navigation (Left/Right arrow keys)
 - Responsive design that adapts to different screen sizes
 - Slide counter showing current position
+- Collapsible slide navigator with thumbnails and large previews
 - Admin mode with annotation capabilities
 - Rich text annotations with HTML support
 - Interactive tooltips that can be hovered and explored
@@ -73,6 +74,15 @@ You can combine parameters (e.g., `index.html?slidesZipUrl=https://example.com/s
 - **Visual Indicators**: Red circles show which elements have annotations
 - **Interactive Tooltips**: Tooltips remain visible when hovered for easier reading
 
+## Slide Navigator Features
+
+- **Collapsible Panel**: Expandable panel showing thumbnails of all slides
+- **Simplified Thumbnails**: Compact view of slides with text elements removed for clarity
+- **Large Preview on Hover**: Hover over thumbnails to see full slide content at 50% size
+- **Isolated Previews**: Each preview is completely isolated to prevent content spillover
+- **Active Slide Highlighting**: Current slide is highlighted in the navigator
+- **Direct Navigation**: Click any thumbnail to jump directly to that slide
+
 ## Technical Details
 
 - Pure JavaScript with no external dependencies
@@ -96,3 +106,5 @@ You can combine parameters (e.g., `index.html?slidesZipUrl=https://example.com/s
 - Support for click actions on elements: navigate to slide, open URL, show image in modal 
 - Add multi-user comment management
 - Support for simple animations: elements appearing/disappearing, perhaps moving?
+- Support for more advanced animations: transitions, perhaps even custom JavaScript?
+

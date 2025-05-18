@@ -12,6 +12,7 @@ graph TD
     B --> C[SlideViewer.js]
     B --> D[AdminController.js]
     B --> K[ZipLoader.js]
+    B --> L[SlideNavigator.js]
     D --> E[AnnotationManager.js]
     E --> F[RichTextEditor.js]
     E --> G[TooltipManager.js]
@@ -20,6 +21,7 @@ graph TD
     D --> J[ElementHandleManager.js]
     K -.-> C
     K -.-> E
+    L -.-> C
     
     style A fill:#f9f,stroke:#333,stroke-width:2px
     style B fill:#bbf,stroke:#333,stroke-width:2px
@@ -29,6 +31,7 @@ graph TD
     style F fill:#dfd,stroke:#333,stroke-width:2px
     style G fill:#dfd,stroke:#333,stroke-width:2px
     style K fill:#ffd,stroke:#333,stroke-width:2px
+    style L fill:#ffd,stroke:#333,stroke-width:2px
 ```
 
 ## Core Modules
@@ -50,6 +53,16 @@ graph TD
   - Providing slides to the SlideViewer
   - Providing annotations to the AnnotationManager
   - Dynamically loading the JSZip library when needed
+
+### SlideNavigator
+- **Purpose**: Provides a visual overview and navigation interface for all slides
+- **Key Responsibilities**:
+  - Creating and managing a collapsible panel with slide thumbnails
+  - Displaying simplified thumbnails of all slides with text elements removed
+  - Showing large, isolated previews when hovering over thumbnails
+  - Highlighting the currently active slide in the navigator
+  - Enabling direct navigation to any slide by clicking its thumbnail
+  - Maintaining proper content isolation between slide previews
 
 ### AdminController
 - **Purpose**: Manages admin mode functionality
