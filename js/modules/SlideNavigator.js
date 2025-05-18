@@ -197,78 +197,208 @@ export class SlideNavigator {
             // Create a loading indicator
             container.innerHTML = `<div style="text-align:center;">Loading...</div>`;
             
+            // Load SVG content
             let svgContent;
             
-            // If we have a zip loader with slides
-            if (this.slideViewer.zipLoader && this.slideViewer.zipLoader.getSlide(index)) {
-                // Load from zip content
-                svgContent = this.slideViewer.zipLoader.getSlide(index);
-            } else {
-                // Load from file system
-                try {
-                    const response = await fetch(`slides/Slide${index}.SVG`);
+            try {
+                // First attempt to get from zip loader if available
+                if (this.slideViewer.zipLoader && this.slideViewer.zipLoader.getSlide(index)) {
+                    svgContent = this.slideViewer.zipLoader.getSlide(index);
+                } else {
+                    // Otherwise load from the file system with cache busting
+                    const response = await fetch(`slides/Slide${index}.SVG?nocache=${Date.now()}`);
                     if (!response.ok) {
                         throw new Error(`Failed to load slide ${index}`);
                     }
                     svgContent = await response.text();
-                } catch (error) {
-                    console.error(`Error fetching slide ${index}:`, error);
-                    container.innerHTML = `<div style="text-align:center;">Slide ${index}</div>`;
-                    return;
                 }
-            }
-            
-            // Create a new div for the SVG content
-            const svgContainer = document.createElement('div');
-            svgContainer.style.width = '100%';
-            svgContainer.style.height = '100%';
-            svgContainer.style.overflow = 'hidden';
-            
-            // Set the SVG content
-            svgContainer.innerHTML = svgContent;
-            
-            // Clear the container and add the SVG container
-            container.innerHTML = '';
-            container.appendChild(svgContainer);
-            
-            // Get the SVG element
-            const svg = svgContainer.querySelector('svg');
-            if (svg) {
-                // Ensure proper scaling and display
-                svg.setAttribute('width', '100%');
-                svg.setAttribute('height', '100%');
-                svg.style.width = '100%';
-                svg.style.height = '100%';
-                svg.style.maxWidth = '100%';
-                svg.style.maxHeight = '100%';
-                svg.style.display = 'block'; // Ensure it's displayed as block
                 
-                // Preserve aspect ratio
-                svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+                // Create a canvas element for rendering the SVG
+                const canvas = document.createElement('canvas');
+                canvas.width = 150;  // Fixed width for thumbnail
+                canvas.height = 100;  // Fixed height for thumbnail
+                canvas.style.width = '100%';
+                canvas.style.height = '100%';
+                canvas.style.objectFit = 'contain';
+                canvas.style.backgroundColor = '#ffffff';
                 
-                // Remove all text elements for further simplification
-                const textElements = svg.querySelectorAll('text, tspan, textPath');
-                textElements.forEach(text => text.remove());
+                // Clear the container and add the canvas
+                container.innerHTML = '';
+                container.appendChild(canvas);
                 
-                // Remove any scripts or interactive elements for security and performance
-                const scripts = svg.querySelectorAll('script');
-                scripts.forEach(script => script.remove());
+                // Add a slide number label
+                const slideNumber = document.createElement('div');
+                slideNumber.className = 'slide-number';
+                slideNumber.textContent = index;
+                container.appendChild(slideNumber);
                 
-                // Remove any animations for thumbnails
-                const animations = svg.querySelectorAll('animate, animateTransform, animateMotion, set');
-                animations.forEach(anim => anim.remove());
+                // Render the SVG to the canvas
+                await this.renderSVGToCanvas(svgContent, canvas, index);
                 
-                // Hide any title or desc elements
-                const metaElements = svg.querySelectorAll('title, desc');
-                metaElements.forEach(el => el.style.display = 'none');
-            } else {
-                console.warn(`No SVG element found in slide ${index}`);
-                container.innerHTML = `<div style="text-align:center;">Slide ${index}</div>`;
+            } catch (error) {
+                console.error(`Error loading/rendering slide ${index}:`, error);
+                // Create a fallback thumbnail with slide number
+                const fallbackDiv = document.createElement('div');
+                fallbackDiv.style.width = '100%';
+                fallbackDiv.style.height = '100%';
+                fallbackDiv.style.display = 'flex';
+                fallbackDiv.style.alignItems = 'center';
+                fallbackDiv.style.justifyContent = 'center';
+                fallbackDiv.style.backgroundColor = '#f0f0f0';
+                fallbackDiv.style.fontSize = '16px';
+                fallbackDiv.style.color = '#666';
+                fallbackDiv.textContent = `Slide ${index}`;
+                
+                container.innerHTML = '';
+                container.appendChild(fallbackDiv);
             }
         } catch (error) {
-            console.error(`Error loading thumbnail for slide ${index}:`, error);
+            console.error(`Error in loadThumbnailPreview for slide ${index}:`, error);
             container.innerHTML = `<div style="text-align:center;">Slide ${index}</div>`;
         }
+    }
+    
+    /**
+     * Renders an SVG to a canvas element
+     * @param {string} svgContent - SVG content as string
+     * @param {HTMLCanvasElement} canvas - Canvas to render to
+     * @param {number} index - Slide index for debugging
+     * @returns {Promise} - Resolves when rendering is complete
+     */
+    renderSVGToCanvas(svgContent, canvas, index) {
+        return new Promise((resolve, reject) => {
+            try {
+                // Get the 2D context for the canvas
+                const ctx = canvas.getContext('2d');
+                
+                // Extract viewBox from SVG for proper scaling
+                const viewBoxMatch = svgContent.match(/viewBox=["']([^"']*)["']/);
+                let viewBox = viewBoxMatch ? viewBoxMatch[1] : "0 0 1600 900";
+                const viewBoxValues = viewBox.split(/[\s,]+/).map(parseFloat);
+                
+                // Get the original width and height from viewBox
+                const originalWidth = viewBoxValues[2];
+                const originalHeight = viewBoxValues[3];
+                
+                // Calculate aspect ratio for proper scaling
+                const aspectRatio = originalWidth / originalHeight;
+                
+                // Clear background to white
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Create a new SVG image
+                const img = new Image();
+                
+                // Clean the SVG content to avoid conflicts
+                const cleanedSvgContent = this.cleanSVGForThumbnail(svgContent, index);
+                
+                // When the image loads, draw it on the canvas with proper scaling
+                img.onload = () => {
+                    try {
+                        // Calculate dimensions to maintain aspect ratio
+                        let drawWidth, drawHeight;
+                        
+                        if (aspectRatio > canvas.width / canvas.height) {
+                            // Wider than tall
+                            drawWidth = canvas.width;
+                            drawHeight = drawWidth / aspectRatio;
+                        } else {
+                            // Taller than wide
+                            drawHeight = canvas.height;
+                            drawWidth = drawHeight * aspectRatio;
+                        }
+                        
+                        // Center the image on the canvas
+                        const x = (canvas.width - drawWidth) / 2;
+                        const y = (canvas.height - drawHeight) / 2;
+                        
+                        // Draw the image on the canvas
+                        ctx.drawImage(img, x, y, drawWidth, drawHeight);
+                        
+                        // Resolve the promise
+                        resolve();
+                    } catch (error) {
+                        console.error(`Error drawing SVG to canvas for slide ${index}:`, error);
+                        reject(error);
+                    }
+                };
+                
+                // Handle errors
+                img.onerror = (error) => {
+                    console.error(`Error loading SVG image for slide ${index}:`, error);
+                    reject(error);
+                };
+                
+                // Set the source to a data URL of the cleaned SVG
+                img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(cleanedSvgContent)}`;
+                
+            } catch (error) {
+                console.error(`Error in renderSVGToCanvas for slide ${index}:`, error);
+                reject(error);
+            }
+        });
+    }
+    
+    /**
+     * Cleans SVG content for use in thumbnails
+     * @param {string} svgContent - Original SVG content
+     * @param {number} index - Slide index for making unique IDs
+     * @returns {string} - Cleaned SVG content
+     */
+    cleanSVGForThumbnail(svgContent, index) {
+        if (!svgContent) return '';
+        
+        try {
+            // Add a unique namespace to all IDs to avoid conflicts between thumbnails
+            // This will prefix all IDs with 'thumb-{index}-'
+            let cleaned = svgContent.replace(/\sid="([^"]*)"/g, ` id="thumb-${index}-$1"`);
+            
+            // Also update any references to IDs (like url(#id))
+            cleaned = cleaned.replace(/url\(#([^)]+)\)/g, `url(#thumb-${index}-$1)`);
+            
+            // Remove scripts for security
+            cleaned = cleaned.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+            
+            // Remove animations for better performance
+            cleaned = cleaned.replace(/<animate\b[^<]*(?:(?!<\/animate>)<[^<]*)*<\/animate>/gi, '');
+            cleaned = cleaned.replace(/<animateTransform\b[^<]*(?:(?!<\/animateTransform>)<[^<]*)*<\/animateTransform>/gi, '');
+            cleaned = cleaned.replace(/<animateMotion\b[^<]*(?:(?!<\/animateMotion>)<[^<]*)*<\/animateMotion>/gi, '');
+            cleaned = cleaned.replace(/<set\b[^<]*(?:(?!<\/set>)<[^<]*)*<\/set>/gi, '');
+            
+            // Ensure SVG has proper attributes for rendering
+            if (!cleaned.includes('xmlns=')) {
+                cleaned = cleaned.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
+            }
+            
+            return cleaned;
+        } catch (error) {
+            console.error(`Error cleaning SVG for slide ${index}:`, error);
+            return svgContent; // Return original if cleaning fails
+        }
+    }
+    
+    /**
+     * Helper method to strip scripts and other unwanted elements from SVG content
+     * @param {string} svgContent - Raw SVG content as string
+     * @returns {string} - Cleaned SVG content
+     */
+    stripSVGScripts(svgContent) {
+        if (!svgContent) return '';
+        
+        // Remove the outer <svg> tags since we're going to nest this inside our own <svg>
+        let content = svgContent.replace(/<svg[^>]*>|<\/svg>/gi, '');
+        
+        // Remove scripts
+        content = content.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+        
+        // Remove animations
+        content = content.replace(/<animate\b[^<]*(?:(?!<\/animate>)<[^<]*)*<\/animate>/gi, '');
+        content = content.replace(/<animateTransform\b[^<]*(?:(?!<\/animateTransform>)<[^<]*)*<\/animateTransform>/gi, '');
+        content = content.replace(/<animateMotion\b[^<]*(?:(?!<\/animateMotion>)<[^<]*)*<\/animateMotion>/gi, '');
+        content = content.replace(/<set\b[^<]*(?:(?!<\/set>)<[^<]*)*<\/set>/gi, '');
+        
+        return content;
     }
     
     /**
