@@ -27,7 +27,9 @@ body {
 #admin-controls {
     margin-top: 10px;
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
+    align-items: center;
 }
 
 .admin-btn {
@@ -397,6 +399,42 @@ body {
     max-width: 250px;
     overflow: auto;
     max-height: 150px;
+}
+
+/* Upload controls styling */
+#upload-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 10px;
+}
+
+.upload-label {
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.file-upload {
+    font-size: 14px;
+}
+
+/* Loading indicator */
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    font-size: 18px;
+    color: #4285f4;
+}
+
+.error {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    font-size: 18px;
+    color: #ea4335;
 }
 
 .annotation-text p {

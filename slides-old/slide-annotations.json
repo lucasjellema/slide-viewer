@@ -1,0 +1,142 @@
+{
+  "slide-1": [
+    {
+      "type": "annotation",
+      "text": "This presentation is generated on May 17th 2025 using Copilot. To illustrate the notion of annotation.",
+      "elementPath": "/g[0]",
+      "elementTag": "g",
+      "elementId": "annotated-element-vate3u7x1",
+      "elementAttributes": {},
+      "position": {
+        "left": "613.156494140625px",
+        "top": "208.70632934570312px"
+      },
+      "created": "2025-05-17T11:13:35.997Z"
+    }
+  ],
+  "slide-2": [
+    {
+      "type": "annotation",
+      "text": "<p style=\"margin-top: 0pt; margin-bottom: 0pt; margin-left: 0in; direction: ltr; unicode-bidi: embed; word-break: normal;\"><span style=\"font-size:12.0pt;\nfont-family:Aptos;mso-ascii-font-family:Aptos;mso-fareast-font-family:+mn-ea;\nmso-bidi-font-family:+mn-cs;mso-ascii-theme-font:minor-latin;mso-fareast-theme-font:\nminor-fareast;mso-bidi-theme-font:minor-bidi;color:black;mso-color-index:1;\nmso-font-kerning:12.0pt;language:en-US;mso-style-textfill-type:solid;\nmso-style-textfill-fill-themecolor:text1;mso-style-textfill-fill-color:black;\nmso-style-textfill-fill-alpha:100.0%\">Ancient manuscripts represent the\nearliest forms of written communication, showcasing the ingenuity of early\ncivilizations. These texts were not only vital for record-keeping but also for\nthe preservation of culture and knowledge. The methods used to create these\nmanuscripts laid the groundwork for future advancements in printing technology,\nmaking it essential to understand their significance in our historical\nnarrative. <br>\n______</span></p>\n\n<p style=\"margin-top: 0pt; margin-bottom: 0pt; margin-left: 0in; direction: ltr; unicode-bidi: embed; word-break: normal;\"><span style=\"font-size:12.0pt;\nfont-family:Aptos;mso-ascii-font-family:Aptos;mso-fareast-font-family:+mn-ea;\nmso-bidi-font-family:+mn-cs;mso-ascii-theme-font:minor-latin;mso-fareast-theme-font:\nminor-fareast;mso-bidi-theme-font:minor-bidi;color:black;mso-color-index:1;\nmso-font-kerning:12.0pt;language:en-US;mso-style-textfill-type:solid;\nmso-style-textfill-fill-themecolor:text1;mso-style-textfill-fill-color:black;\nmso-style-textfill-fill-alpha:100.0%\"><br>\n</span><span style=\"font-size:12.0pt;font-family:Aptos;mso-ascii-font-family:\nAptos;mso-fareast-font-family:+mn-ea;mso-bidi-font-family:+mn-cs;mso-ascii-theme-font:\nminor-latin;mso-fareast-theme-font:minor-fareast;mso-bidi-theme-font:minor-bidi;\ncolor:black;mso-color-index:1;mso-font-kerning:12.0pt;language:en-US;\nmso-style-textfill-type:solid;mso-style-textfill-fill-themecolor:text1;\nmso-style-textfill-fill-color:black;mso-style-textfill-fill-alpha:100.0%\">The\nart of writing has ancient roots, evolving from primitive symbols to\nsophisticated scripts. Understanding these early forms of writing and the\nmaterials used sets the stage for the development of manuscripts.</span></p>",
+      "elementPath": "/g[0]/rect[2]",
+      "elementTag": "rect",
+      "elementId": "annotated-element-26331wyry",
+      "elementAttributes": {
+        "x": "343.5",
+        "y": "193.5",
+        "width": "266",
+        "height": "160"
+      },
+      "position": {
+        "left": "424.658px",
+        "top": "228.397px"
+      },
+      "created": "2025-05-17T11:14:11.547Z"
+    },
+    {
+      "type": "annotation",
+      "text": "<span style=\"font-size:12.0pt;font-family:Aptos;\nmso-ascii-font-family:Aptos;mso-fareast-font-family:+mn-ea;mso-bidi-font-family:\n+mn-cs;mso-ascii-theme-font:minor-latin;mso-fareast-theme-font:minor-fareast;\nmso-bidi-theme-font:minor-bidi;color:black;mso-color-index:1;mso-font-kerning:\n12.0pt;language:en-US;mso-style-textfill-type:solid;mso-style-textfill-fill-themecolor:\ntext1;mso-style-textfill-fill-color:black;mso-style-textfill-fill-alpha:100.0%\">The\ninvention of movable type printing marked a pivotal moment in the history of\ncommunication. This innovation allowed for the mass production of texts,\nsignificantly changing how information was disseminated. Understanding the\nimplications of this invention is key to appreciating its impact on literacy\nand education in subsequent centuries.&nbsp;<br></span>",
+      "elementPath": "/g[0]/rect[3]",
+      "elementTag": "rect",
+      "elementId": "annotated-element-etse1pdq4",
+      "elementAttributes": {
+        "x": "636.5",
+        "y": "193.5",
+        "width": "267",
+        "height": "160"
+      },
+      "position": {
+        "left": "667.611px",
+        "top": "228.397px"
+      },
+      "created": "2025-05-17T11:14:46.311Z"
+    },
+    {
+      "type": "annotation",
+      "text": "<span style=\"font-size:12.0pt;font-family:Aptos;\nmso-ascii-font-family:Aptos;mso-fareast-font-family:+mn-ea;mso-bidi-font-family:\n+mn-cs;mso-ascii-theme-font:minor-latin;mso-fareast-theme-font:minor-fareast;\nmso-bidi-theme-font:minor-bidi;color:black;mso-color-index:1;mso-font-kerning:\n12.0pt;language:en-US;mso-style-textfill-type:solid;mso-style-textfill-fill-themecolor:\ntext1;mso-style-textfill-fill-color:black;mso-style-textfill-fill-alpha:100.0%\">The\nspread of printing technology in Europe was a transformative process that\nreshaped communication and education. As printing presses emerged in various\nregions, they facilitated the rapid dissemination of ideas, contributing to\nsignificant cultural and intellectual movements. Understanding this spread is\ncrucial for grasping the broader implications of printing on European society.&nbsp;<br></span>",
+      "elementPath": "/g[0]/rect[4]",
+      "elementTag": "rect",
+      "elementId": "annotated-element-pa67vtrum",
+      "elementAttributes": {
+        "x": "929.5",
+        "y": "193.5",
+        "width": "267",
+        "height": "160"
+      },
+      "position": {
+        "left": "910.15px",
+        "top": "228.397px"
+      },
+      "created": "2025-05-17T11:15:05.301Z"
+    },
+    {
+      "type": "annotation",
+      "text": "<span style=\"font-size:12.0pt;font-family:Aptos;\nmso-ascii-font-family:Aptos;mso-fareast-font-family:+mn-ea;mso-bidi-font-family:\n+mn-cs;mso-ascii-theme-font:minor-latin;mso-fareast-theme-font:minor-fareast;\nmso-bidi-theme-font:minor-bidi;color:black;mso-color-index:1;mso-font-kerning:\n12.0pt;language:en-US;mso-style-textfill-type:solid;mso-style-textfill-fill-themecolor:\ntext1;mso-style-textfill-fill-color:black;mso-style-textfill-fill-alpha:100.0%\">Advancements\nin printing techniques have continually shaped the industry, leading to more\nefficient and high-quality production methods. Understanding these developments\nis essential for appreciating how printing has evolved and adapted to meet the\nchanging needs of society and technology over time.&nbsp;</span>",
+      "elementPath": "/g[0]/rect[5]",
+      "elementTag": "rect",
+      "elementId": "annotated-element-84o1tlws1",
+      "elementAttributes": {
+        "x": "343.5",
+        "y": "379.5",
+        "width": "266",
+        "height": "160"
+      },
+      "position": {
+        "left": "424.658px",
+        "top": "382.364px"
+      },
+      "created": "2025-05-17T11:16:04.383Z"
+    },
+    {
+      "type": "annotation",
+      "text": "<span style=\"font-size:12.0pt;font-family:Aptos;\nmso-ascii-font-family:Aptos;mso-fareast-font-family:+mn-ea;mso-bidi-font-family:\n+mn-cs;mso-ascii-theme-font:minor-latin;mso-fareast-theme-font:minor-fareast;\nmso-bidi-theme-font:minor-bidi;color:black;mso-color-index:1;mso-font-kerning:\n12.0pt;language:en-US;mso-style-textfill-type:solid;mso-style-textfill-fill-themecolor:\ntext1;mso-style-textfill-fill-color:black;mso-style-textfill-fill-alpha:100.0%\">The\nrise of digital printing represents a significant shift in the printing\nindustry, offering new capabilities and efficiencies. This transition has\ntransformed how we produce printed materials, allowing for greater\ncustomization and faster turnaround times, which are essential in today’s\nfast-paced market.&nbsp;<br></span>",
+      "elementPath": "/g[0]/rect[6]",
+      "elementTag": "rect",
+      "elementId": "annotated-element-976m7pcbe",
+      "elementAttributes": {
+        "x": "636.5",
+        "y": "379.5",
+        "width": "267",
+        "height": "160"
+      },
+      "position": {
+        "left": "667.611px",
+        "top": "382.364px"
+      },
+      "created": "2025-05-17T11:16:16.189Z"
+    },
+    {
+      "type": "annotation",
+      "text": "<span style=\"font-size:12.0pt;font-family:Aptos;\nmso-ascii-font-family:Aptos;mso-fareast-font-family:+mn-ea;mso-bidi-font-family:\n+mn-cs;mso-ascii-theme-font:minor-latin;mso-fareast-theme-font:minor-fareast;\nmso-bidi-theme-font:minor-bidi;color:black;mso-color-index:1;mso-font-kerning:\n12.0pt;language:en-US;mso-style-textfill-type:solid;mso-style-textfill-fill-themecolor:\ntext1;mso-style-textfill-fill-color:black;mso-style-textfill-fill-alpha:100.0%\">The\nfuture of book printing is poised for exciting developments as technology\ncontinues to evolve. Anticipating these changes will help us understand how the\nindustry will adapt to new demands and opportunities, ensuring that printed\nmaterials remain relevant in an increasingly digital world.&nbsp;</span>",
+      "elementPath": "/g[0]/rect[7]",
+      "elementTag": "rect",
+      "elementId": "annotated-element-soq73vd0e",
+      "elementAttributes": {
+        "x": "929.5",
+        "y": "379.5",
+        "width": "267",
+        "height": "160"
+      },
+      "position": {
+        "left": "910.15px",
+        "top": "382.364px"
+      },
+      "created": "2025-05-17T11:16:28.511Z"
+    }
+  ],
+  "slide-3": [
+    {
+      "type": "annotation",
+      "text": "<font color=\"#ff0000\">OLD!</font><div><font color=\"#ff0000\"><br></font></div>\n<img src=\"https://plus.unsplash.com/premium_photo-1681825205424-6840b50c231b?w=500&amp;auto=format&amp;fit=crop&amp;q=60&amp;ixlib=rb-4.1.0&amp;ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8b2xkJTIwYm9va3xlbnwwfHwwfHx8MA%3D%3D\">",
+      "elementPath": "/g[0]/text[0]",
+      "elementTag": "text",
+      "elementId": "annotated-element-21xk66xgy",
+      "elementAttributes": {},
+      "position": {
+        "left": "598px",
+        "top": "90px"
+      },
+      "created": "2025-05-17T11:16:59.397Z"
+    }
+  ]
+}

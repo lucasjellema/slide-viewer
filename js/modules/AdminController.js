@@ -5,6 +5,7 @@
 import { AnnotationManager } from './AnnotationManager.js';
 import { ElementDetector } from './ElementDetector.js';
 import { ElementHandleManager } from './ElementHandleManager.js';
+import { ZipLoader } from './ZipLoader.js';
 
 export class AdminController {
     /**
@@ -16,6 +17,9 @@ export class AdminController {
         this.adminControls = config.adminControls;
         this.editBtn = config.editBtn;
         this.downloadBtn = config.downloadBtn;
+        this.downloadPackageBtn = document.getElementById('download-package-btn');
+        this.uploadControls = document.getElementById('upload-controls');
+        this.slideUpload = document.getElementById('slide-upload');
         
         // Dependencies
         this.slideViewer = config.slideViewer;
@@ -35,6 +39,9 @@ export class AdminController {
         
         // Set up event listeners
         this.setupEventListeners();
+        
+        // Initialize JSZip
+        this.initJSZip();
     }
     
     /**
@@ -46,6 +53,7 @@ export class AdminController {
         
         if (isAdmin) {
             this.adminControls.style.display = 'flex';
+            this.uploadControls.style.display = 'flex';
         }
     }
     
@@ -58,6 +66,12 @@ export class AdminController {
         
         // Download annotations
         this.downloadBtn.addEventListener('click', () => this.downloadAnnotations());
+        
+        // Download complete package (slides + annotations)
+        this.downloadPackageBtn.addEventListener('click', () => this.downloadCompletePackage());
+        
+        // Upload slides zip file
+        this.slideUpload.addEventListener('change', (e) => this.handleZipUpload(e));
         
         // Listen for slide changes to update annotations
         this.slideViewer.on('beforeSlideLoad', (e) => {
@@ -89,6 +103,7 @@ export class AdminController {
             this.editBtn.textContent = 'Exit Edit Mode';
             this.slideViewer.slideDisplay.classList.add('edit-mode');
             this.downloadBtn.style.display = 'block';
+            this.downloadPackageBtn.style.display = 'block';
             
             console.log('Entering edit mode');
             
@@ -102,6 +117,8 @@ export class AdminController {
             this.editBtn.classList.remove('active');
             this.editBtn.textContent = 'Edit Mode';
             this.slideViewer.slideDisplay.classList.remove('edit-mode');
+            this.downloadBtn.style.display = 'none';
+            this.downloadPackageBtn.style.display = 'none';
             
             // Save all annotation positions before exiting edit mode
             // This ensures positions are properly saved after dragging
@@ -390,15 +407,195 @@ export class AdminController {
     }
     
     /**
+     * Initialize JSZip library
+     */
+    initJSZip() {
+        return new Promise((resolve, reject) => {
+            if (typeof JSZip === 'undefined') {
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+                script.integrity = 'sha512-XMVd28F1oH/O71fzwBnV7HucLxVwtxf26XV8P4wPk26EDxuGZ91N8bsOttmnomcCD3CS5ZMRL50H0GgOHvegtg==';
+                script.crossOrigin = 'anonymous';
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            } else {
+                resolve();
+            }
+        });
+    }
+    
+    /**
+     * Handle upload of a zip file containing slides and annotations
+     * @param {Event} e - File input change event
+     */
+    async handleZipUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        if (file.type !== 'application/zip' && !file.name.endsWith('.zip')) {
+            alert('Please upload a valid ZIP file');
+            return;
+        }
+        
+        try {
+            // Show loading message
+            this.slideViewer.slideDisplay.innerHTML = '<div class="loading">Loading slides from uploaded zip file...</div>';
+            
+            // Make sure JSZip is loaded
+            if (typeof JSZip === 'undefined') {
+                await this.initJSZip();
+            }
+            
+            // Read the zip file
+            const zipData = await this.readFileAsArrayBuffer(file);
+            const zip = await JSZip.loadAsync(zipData);
+            
+            // Create a ZipLoader instance and process the zip contents
+            const zipLoader = new ZipLoader();
+            await zipLoader.processZipContents(zip);
+            
+            if (zipLoader.getTotalSlides() === 0) {
+                this.slideViewer.slideDisplay.innerHTML = '<div class="error">No SVG slides found in the zip file. Make sure slides are named as Slide1.SVG, Slide2.SVG, etc.</div>';
+                return;
+            }
+            
+            // Initialize the application with the loaded zip content
+            this.slideViewer.zipLoader = zipLoader;
+            this.slideViewer.totalSlides = zipLoader.getTotalSlides();
+            this.annotationManager.zipLoader = zipLoader;
+            
+            // Load annotations from the zip file if available
+            const annotations = zipLoader.getAnnotations();
+            if (annotations) {
+                // Directly set the annotations property
+                this.annotationManager.annotations = annotations;
+                console.log('Loaded annotations from uploaded zip file');
+            }
+            
+            // Reset the file input to allow re-uploading the same file
+            this.slideUpload.value = '';
+            
+            // Load the first slide
+            this.slideViewer.loadSlide(1);
+            
+            console.log(`Successfully loaded ${zipLoader.getTotalSlides()} slides from zip file`);
+        } catch (error) {
+            console.error('Error processing zip file:', error);
+            this.slideViewer.slideDisplay.innerHTML = '<div class="error">Failed to process the uploaded zip file. See console for details.</div>';
+        }
+    }
+    
+    /**
+     * Read a file as an ArrayBuffer
+     * @param {File} file - The file to read
+     * @returns {Promise<ArrayBuffer>} - Promise that resolves to the file contents as ArrayBuffer
+     */
+    readFileAsArrayBuffer(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result);
+            reader.onerror = reject;
+            reader.readAsArrayBuffer(file);
+        });
+    }
+    
+    /**
+     * Download a complete package containing all slides and annotations
+     */
+    async downloadCompletePackage() {
+        try {
+            // First make sure we save any current annotations
+            const currentSlideIndex = this.slideViewer.getCurrentSlideIndex();
+            this.annotationManager.saveRemovedElements(currentSlideIndex);
+            
+            // Get all annotations from the annotation manager
+            const annotations = this.annotationManager.getAllAnnotations();
+            
+            // Create a new JSZip instance
+            if (typeof JSZip === 'undefined') {
+                await this.initJSZip();
+            }
+            const zip = new JSZip();
+            
+            // Add the annotations to the zip file
+            const annotationsJson = JSON.stringify(annotations, null, 2);
+            zip.file('slide-annotations.json', annotationsJson);
+            
+            // Add all slides to the zip file
+            await this.addSlidesToZip(zip);
+            
+            // Generate the zip file
+            const zipBlob = await zip.generateAsync({ type: 'blob' });
+            
+            // Create a download link
+            const url = URL.createObjectURL(zipBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'slides-package.zip';
+            document.body.appendChild(a);
+            a.click();
+            
+            // Clean up
+            setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 0);
+            
+            console.log('Downloaded complete package with slides and annotations');
+        } catch (error) {
+            console.error('Error creating package for download:', error);
+            alert('Error creating package for download. See console for details.');
+        }
+    }
+    
+    /**
+     * Add slides to a zip file
+     * @param {JSZip} zip - The JSZip instance to add slides to
+     */
+    async addSlidesToZip(zip) {
+        const totalSlides = this.slideViewer.totalSlides;
+        const promises = [];
+        
+        for (let i = 1; i <= totalSlides; i++) {
+            // If using zipLoader, get slides from there
+            if (this.slideViewer.zipLoader) {
+                const slideContent = this.slideViewer.zipLoader.getSlide(i);
+                if (slideContent) {
+                    zip.file(`Slide${i}.SVG`, slideContent);
+                    continue;
+                }
+            }
+            
+            // Otherwise fetch slides from the server
+            promises.push(
+                fetch(`slides/Slide${i}.SVG`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Failed to fetch Slide${i}.SVG`);
+                        }
+                        return response.text();
+                    })
+                    .then(content => {
+                        zip.file(`Slide${i}.SVG`, content);
+                    })
+                    .catch(error => {
+                        console.error(`Error adding Slide${i}.SVG to package:`, error);
+                    })
+            );
+        }
+        
+        await Promise.all(promises);
+    }
+    
+    /**
      * Save annotations to a file in the slides folder
      * @param {string} annotationsJson - The JSON string to save
      */
     saveAnnotationsToFile(annotationsJson) {
-        // Use fetch with POST method to save the file
-        // This requires a server-side endpoint to handle the file saving
-        // For this example, we'll use a hypothetical endpoint
+        // This function was keeping a placeholder for server-side implementation
+        // Removed server-side related code and using client-side file APIs instead
         try {
-            // Create a form data object
             const formData = new FormData();
             const blob = new Blob([annotationsJson], { type: 'application/json' });
             formData.append('file', blob, 'slide-annotations.json');

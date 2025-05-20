@@ -20,6 +20,8 @@ https://lucasjellema.github.io/slide-viewer/?slidesZipUrl=https://raw.githubuser
 - Interactive tooltips that can be hovered and explored
 - Ability to remove/hide objects from slides
 - Download annotations as JSON file
+- Download complete package (slides + annotations) as a zip file
+- Upload slides and annotations from a local zip file
 - Persistent annotations via localStorage and file storage
 - Dynamic loading of slides and annotations from remote zip files
 
@@ -38,6 +40,28 @@ https://lucasjellema.github.io/slide-viewer/?slidesZipUrl=https://raw.githubuser
 4. Click and drag annotations to reposition them
 5. Click on annotations to edit their content
 6. Click the "Download Annotations" button to save all annotations as a JSON file
+7. Click the "Download Complete Package" button to download all slides and annotations as a zip file
+8. Use the file upload control to upload a zip file containing SVG slides and optional annotations
+
+### Upload and Download Slides
+
+#### Upload Slides from Local Zip File
+In admin mode, you can upload a zip file containing SVG slides and optional annotations:
+
+1. Access admin mode by adding `?admin=yes` to the URL
+2. Use the file upload control labeled "Upload Slides+Annotations Zip" to select a zip file
+3. The application will process the zip file and load the slides and annotations
+
+Requirements for the zip file:
+- SVG files must be named in the format `Slide1.SVG`, `Slide2.SVG`, etc.
+- Optional annotations file named either `slide-annotations.json` or `annotations.json`
+
+#### Download Complete Package
+In admin mode, when in edit mode, you can download all slides and annotations as a complete package:
+
+1. Click the "Download Complete Package" button
+2. The application will create a zip file containing all slides and annotations
+3. The zip file will be downloaded to your device
 
 ### Remote Slides
 You can load slides and annotations from a remote zip file using the `slidesZipUrl` parameter:
@@ -85,7 +109,8 @@ You can combine parameters (e.g., `index.html?slidesZipUrl=https://example.com/s
 
 ## Technical Details
 
-- Pure JavaScript with no external dependencies
+- Pure JavaScript with JSZip library for zip file operations (loaded dynamically when needed)
+- No other external dependencies
 - Modular architecture with separate components
 - SVG manipulation for indicators and element handling
 - Responsive design that works on various devices
